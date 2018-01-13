@@ -2,10 +2,8 @@
 
 
 library(htmlTable)
-library(ggplot2)
 library(nycflights13)
 library(dplyr)
-library(htmlTable)
 
 nycflights13::planes %>% 
               slice(1:10) %>% mutate( seats = seats*1.0001,
