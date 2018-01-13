@@ -1,0 +1,39 @@
+
+
+
+library(htmlTable)
+library(ggplot2)
+library(nycflights13)
+library(dplyr)
+library(htmlTable)
+
+nycflights13::planes %>% 
+              slice(1:10) %>% mutate( seats = seats*1.0001,
+                                 s1    = c("1-5", "5-10", "1/2", "1/10", "2-3", "1", "1.0", "01", "01.00", "asfdkjlæ" ),
+                                 s2    = c("(10)", "(12)", "(234)", "(00)", "(01)", "(098)", "(01)", "(01.)", "(001.0)", "()" )) -> df 
+    
+# df <- df %>% mutate_all(  .funs = function(x) paste0(  "PREFIX SOMETHING TO EACH CELL", x))
+
+rle_man <- rle(df$manufacturer)
+
+css_matrix <- matrix( data = "", nrow = nrow(df), ncol = ncol(df))
+css_matrix[,1] <- "padding-left: 0.4cm;"
+css_matrix[,2:10] <- "padding-left: 1cm;"
+css_matrix[,5] <- "padding-left: 2cm;"
+
+
+htmlTable( x = df,  
+           rgroup   = rle_man$values, n.rgroup = rle_man$lengths, 
+           rnames   = FALSE, align = c("l", "r" ), 
+           cgroup   =  rbind(  c("", "Some text goes here. It is long and does not break", "Other text goes here", NA),
+                               c( "", "Machine type<br>(make)", "Specification of machine", "Other variables")),
+           n.cgroup = rbind(   c(1,8,2, NA),
+                              c(1, 3, 5, 2)), 
+           css.cell = css_matrix )            -> html_out
+
+
+readr::write_file( x = html_out, path = "WRITEDESTINATIONHERE/table.html")
+utils::browseURL( "WRITEDESTINATIONHERE/table.html")
+
+
+
